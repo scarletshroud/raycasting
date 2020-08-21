@@ -1,21 +1,32 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
+#include "Map.h"
 
 class Player {
 private:
+	const float SPEED = 0.1f; 
+	const double PI = 3.141592653589793;
 	float pos_x;
 	float pos_y; 
-	int dx;
-	int dy; 
+	float dx;
+	float dy; 
+	double sightAngle; 
+
+	std::vector<sf::VertexArray*> sightLines;
 
 	sf::CircleShape* playerModel; 
+	Map* map;
+
+	bool handleEvent();
+	void lookAt(sf::RenderWindow& window); 
 
 public:
-	Player();
+	Player(Map* map);
 	~Player();
 
-	sf::CircleShape* getPlayerModel() {
-		return playerModel;
-	}
+	void update(sf::RenderWindow& window, float time);
+
+	sf::CircleShape* getPlayerModel();
+	std::vector<sf::VertexArray*>& getSightLines();
 };

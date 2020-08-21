@@ -1,9 +1,9 @@
 #include "Renderer.h"
 
-Renderer::Renderer(sf::RenderWindow &window) {
+Renderer::Renderer(sf::RenderWindow& window) {
 	this->window = &window;
 	map = new Map();
-	player = new Player();
+	player = new Player(map);
 }
 
 Renderer::~Renderer() {
@@ -11,11 +11,20 @@ Renderer::~Renderer() {
 	delete player;
 }
 
+void Renderer::update(float time) {
+	player->update(*window, time);
+}
+
 void Renderer::render() {
-	//Rendering map//
+	
 	for (const auto rectangle : map->getGraphicPresentation()) {
 		window->draw(*rectangle);
 	}
+
 	window->draw(*player->getPlayerModel());
-	
+     
+	for (const auto sightLine : player->getSightLines()) {
+		window->draw(*sightLine);
+	}
+
 } 

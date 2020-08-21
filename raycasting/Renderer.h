@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "map.h"
+#include "Map.h"
 #include "Player.h"
 
 class Renderer {
@@ -12,8 +12,9 @@ private:
 	Player* player;
 
 public:
-	Renderer(sf::RenderWindow &window);
+	Renderer(sf::RenderWindow& window);
 	~Renderer();
 
+	void update(float time);
 	void render(); 
 };
