@@ -4,7 +4,7 @@
 using namespace sf;
 
 int main() {
-	RenderWindow window(VideoMode(640, 480), "ray casting");
+	RenderWindow window(VideoMode(1280, 720), "ray casting");
 	sf::Clock clock;
 	Renderer renderer = Renderer(window);
 

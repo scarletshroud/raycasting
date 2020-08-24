@@ -18,4 +18,6 @@ public:
 	int height();
 	char* getMarkup(); 
 	std::vector<sf::RectangleShape*>& getGraphicPresentation();
+
+	bool checkIntersection(float x, float y); 
 };

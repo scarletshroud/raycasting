@@ -7,6 +7,7 @@ class Player {
 private:
 	const float SPEED = 0.1f; 
 	const double PI = 3.141592653589793;
+	const float PLAYER_SIZE = 10.f;
 	float pos_x;
 	float pos_y; 
 	float dx;
@@ -26,6 +27,7 @@ public:
 	~Player();
 
 	void update(sf::RenderWindow& window, float time);
+	bool checkCollision();
 
 	sf::CircleShape* getPlayerModel();
 	std::vector<sf::VertexArray*>& getSightLines();
