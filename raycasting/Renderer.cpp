@@ -27,4 +27,7 @@ void Renderer::render() {
 		window->draw(*sightLine);
 	}
 
+	for (const auto wall : player->getWalls()) {
+		window->draw(*wall);
+	}
 } 

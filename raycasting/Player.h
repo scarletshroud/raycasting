@@ -15,12 +15,14 @@ private:
 	double sightAngle; 
 
 	std::vector<sf::VertexArray*> sightLines;
+	std::vector<sf::VertexArray*> walls; 
 
 	sf::CircleShape* playerModel; 
 	Map* map;
 
 	bool handleEvent();
 	void lookAt(sf::RenderWindow& window); 
+	void drawWalls(double sightAngle); 
 
 public:
 	Player(Map* map);
@@ -31,4 +33,5 @@ public:
 
 	sf::CircleShape* getPlayerModel();
 	std::vector<sf::VertexArray*>& getSightLines();
+	std::vector<sf::VertexArray*>& getWalls();
 };

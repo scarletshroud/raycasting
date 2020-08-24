@@ -48,6 +48,9 @@ void Player::lookAt(sf::RenderWindow& window) {
 	 } */
 
 	sightLines.clear();
+	walls.clear();
+
+	const float LAMBDA = 50000.f;
 
 	sf::Vector2i cursorPos = sf::Mouse::getPosition(window);
 	float cursor_dx = cursorPos.x - pos_x;
@@ -57,7 +60,9 @@ void Player::lookAt(sf::RenderWindow& window) {
 	float i = 0;
 
 	while (i <= PI / 3) {
-		i += 0.01f;
+		i += 0.002f;
+
+		bool reachedWall = false;
 
 		float end_pointX = 0;
 		float end_pointY = 0;
@@ -66,6 +71,7 @@ void Player::lookAt(sf::RenderWindow& window) {
 			end_pointX = pos_x + distance * cos(sightAngle);
 			end_pointY = pos_y + distance * sin(sightAngle);
 			if (map->checkIntersection(end_pointX, end_pointY)) {
+				reachedWall = true;
 				break;
 			}
 		}
@@ -77,12 +83,30 @@ void Player::lookAt(sf::RenderWindow& window) {
 		(*line)[1].color = sf::Color::Red;
 
 		sightLines.push_back(line);
-		sightAngle += 0.01;
+
+		if (reachedWall) {
+
+			float offsetX = end_pointX - pos_x;
+			float offsetY = end_pointY - pos_y;
+			float distance = sqrt(offsetX * offsetX + offsetY * offsetY);
+			float wall_length = LAMBDA / distance;
+
+			sf::VertexArray* wall = new sf::VertexArray(sf::Lines, 2);
+			(*wall)[0].position = sf::Vector2f(700 + sightAngle * 1000, 550);
+			(*wall)[0].color = sf::Color::Cyan;
+			(*wall)[1].position = sf::Vector2f(700 + sightAngle * 1000, 550 - wall_length);
+			(*wall)[1].color = sf::Color::Cyan;
+
+			walls.push_back(wall);
+
+		}
+
+		sightAngle += 0.002f;
 	}
 }
 
-void Player::drawWalls() {
-
+void Player::drawWalls(double sightAngle) {
+	 
 }
 
 void Player::update(sf::RenderWindow& window, float time) {
@@ -97,6 +121,7 @@ void Player::update(sf::RenderWindow& window, float time) {
 	}
 
 	lookAt(window);
+	drawWalls(sightAngle);
 }
 
 bool Player::checkCollision() {
@@ -114,4 +139,8 @@ sf::CircleShape* Player::getPlayerModel() {
 
 std::vector<sf::VertexArray*>& Player::getSightLines() {
 	return sightLines;
+}
+
+std::vector<sf::VertexArray*>& Player::getWalls() {
+	return walls;
 }
