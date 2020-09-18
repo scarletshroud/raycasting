@@ -19,23 +19,28 @@ Player::~Player() {
 }
 
 bool Player::handleEvent() {
+
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W))) {
-		dy = -SPEED; 
+		dy = sin(sightAngle - PI / 6) * SPEED; 
+		dx = cos(sightAngle - PI / 6) * SPEED;
 		return true;
 	}
 
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::A))) {
-		dx = -SPEED;
+		dy = sin(sightAngle - PI / 6 - PI / 2) * SPEED;
+		dx = cos(sightAngle - PI / 6 - PI / 2) * SPEED;
 		return true;
 	}
 
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::S))) {
-		dy = SPEED;
+		dy = -sin(sightAngle - PI / 6) * SPEED;
+		dx = -cos(sightAngle - PI / 6) * SPEED;
 		return true;
 	}
 
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::D))) {
-		dx = SPEED;
+		dy = sin(sightAngle - PI / 6 + PI / 2) * SPEED;
+		dx = cos(sightAngle - PI / 6 + PI / 2) * SPEED;
 		return true;
 	}
 
@@ -43,9 +48,14 @@ bool Player::handleEvent() {
 }
 
 void Player::lookAt(sf::RenderWindow& window) {
-	/* for (const auto& sightLine : sightLines) { //throws exeption
+
+	for (const auto& sightLine : sightLines) { //throws exeption
 		 delete sightLine;
-	 } */
+	 } 
+
+	for (const auto& wall : walls) { //throws exeption
+		delete wall;
+	}
 
 	sightLines.clear();
 	walls.clear();
@@ -55,7 +65,7 @@ void Player::lookAt(sf::RenderWindow& window) {
 	sf::Vector2i cursorPos = sf::Mouse::getPosition(window);
 	float cursor_dx = cursorPos.x - pos_x;
 	float cursor_dy = cursorPos.y - pos_y;
-	double sightAngle = (atan2(cursor_dy, cursor_dx)) - PI / 6;
+	sightAngle = (atan2(cursor_dy, cursor_dx)) - PI / 6;
 
 	float i = 0;
 
@@ -92,10 +102,10 @@ void Player::lookAt(sf::RenderWindow& window) {
 			float wall_length = LAMBDA / distance;
 
 			sf::VertexArray* wall = new sf::VertexArray(sf::Lines, 2);
-			(*wall)[0].position = sf::Vector2f(700 + sightAngle * 1000, 550);
-			(*wall)[0].color = sf::Color::Cyan;
-			(*wall)[1].position = sf::Vector2f(700 + sightAngle * 1000, 550 - wall_length);
-			(*wall)[1].color = sf::Color::Cyan;
+			(*wall)[0].position = sf::Vector2f(500 + i * 1000, 550);
+			(*wall)[0].color = sf::Color(0, 255, 255, 255 - distance / 1.5);
+			(*wall)[1].position = sf::Vector2f(500 + i * 1000, 550 - wall_length);
+			(*wall)[1].color = sf::Color(0, 255, 255, 255 - distance / 1.5);
 
 			walls.push_back(wall);
 

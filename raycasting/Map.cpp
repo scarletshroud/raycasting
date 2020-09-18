@@ -1,31 +1,30 @@
 #include "map.h"
 #include <iostream>
 
+const char* Map::p_markup =
+							"111111111111111"
+							"1             1"
+							"1      11111  1"
+							"1             1"
+							"1        111111"
+							"1             1"
+							"1     111     1"
+							"1       1     1"
+							"1   1   1     1"
+							"1   1   1  1111"
+							"1       1     1"
+							"1       1     1"
+							"1       1     1"
+							"1             1"
+							"111111111111111";
+
 Map::Map() {
-	 char markup[226] = {
-		"111111111111111"\
-		"1             1"\
-		"1      11111  1"\
-		"1             1"\
-		"1        111111"\
-		"1             1"\
-		"1     111     1"\
-		"1       1     1"\
-		"1   1   1     1"\
-		"1   1   1  1111"\
-		"1       1     1"\
-		"1       1     1"\
-		"1       1     1"\
-		"1             1"\
-		"111111111111111"};
-
-	 p_markup = markup;
-
+	
 	 int j = 0;
 
 	 for (int i = 0; i < MAP_HEIGHT * MAP_WIDTH; ++i) {
 
-		 if (markup[i] == '1') {
+		 if (p_markup[i] == '1') {
 			 sf::RectangleShape* rectangle = new sf::RectangleShape(sf::Vector2f(CELL_SIZE, CELL_SIZE));
 			 rectangle->setFillColor(sf::Color::Cyan);
 			 rectangle->setOrigin(CELL_SIZE / 2, CELL_SIZE / 2);
@@ -41,7 +40,6 @@ Map::Map() {
 }
 
 Map::~Map() {
-	delete[] p_markup;
 	for (const auto& rectangle : walls) {
 		delete rectangle;
 	}
@@ -55,7 +53,7 @@ int Map::height() {
 	return MAP_HEIGHT;
 }
 
-char* Map::getMarkup() {
+const char* Map::getMarkup() {
 	return p_markup;
 }
 

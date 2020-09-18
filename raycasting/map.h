@@ -1,13 +1,15 @@
-#pragma once
+#ifndef MAP_H
+#define MAP_H
 
 #include "SFML/Graphics.hpp"
 
 class Map {
 private:
+
 	const int MAP_WIDTH = 15;
 	const int MAP_HEIGHT = 15;
 	const int CELL_SIZE = 30;
-	char* p_markup;
+	static const char* p_markup;
 	std::vector<sf::RectangleShape*> walls;
 
 public:
@@ -16,8 +18,10 @@ public:
 
 	int width();
 	int height();
-	char* getMarkup(); 
+	static const char* getMarkup(); 
 	std::vector<sf::RectangleShape*>& getGraphicPresentation();
 
 	bool checkIntersection(float x, float y); 
 };
+
+#endif

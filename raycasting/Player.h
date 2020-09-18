@@ -1,11 +1,12 @@
-#pragma once
+#ifndef PLAYER_H
+#define PLAYER_H
 
 #include "SFML/Graphics.hpp"
 #include "Map.h"
 
 class Player {
 private:
-	const float SPEED = 0.1f; 
+	const float SPEED = 0.05f; 
 	const double PI = 3.141592653589793;
 	const float PLAYER_SIZE = 10.f;
 	float pos_x;
@@ -35,3 +36,5 @@ public:
 	std::vector<sf::VertexArray*>& getSightLines();
 	std::vector<sf::VertexArray*>& getWalls();
 };
+
+#endif S

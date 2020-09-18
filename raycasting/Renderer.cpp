@@ -4,11 +4,13 @@ Renderer::Renderer(sf::RenderWindow& window) {
 	this->window = &window;
 	map = new Map();
 	player = new Player(map);
+	enemy = new Enemy();
 }
 
 Renderer::~Renderer() {
 	delete map;
 	delete player;
+	delete enemy;
 }
 
 void Renderer::update(float time) {
@@ -22,10 +24,11 @@ void Renderer::render() {
 	}
 
 	window->draw(*player->getPlayerModel());
+	window->draw(*enemy->getEnemyModel()); 
      
 	for (const auto sightLine : player->getSightLines()) {
 		window->draw(*sightLine);
-	}
+	} 
 
 	for (const auto wall : player->getWalls()) {
 		window->draw(*wall);
