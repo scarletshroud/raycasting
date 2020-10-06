@@ -1,40 +1,58 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#define _USE_MATH_DEFINES
+
+#include <math.h>
+#include <map>
+
 #include "SFML/Graphics.hpp"
 #include "Map.h"
 
+class Enemy;
+
 class Player {
-private:
-	const float SPEED = 0.05f; 
-	const double PI = 3.141592653589793;
-	const float PLAYER_SIZE = 10.f;
-	float pos_x;
-	float pos_y; 
-	float dx;
-	float dy; 
-	double sightAngle; 
-
-	std::vector<sf::VertexArray*> sightLines;
-	std::vector<sf::VertexArray*> walls; 
-
-	sf::CircleShape* playerModel; 
-	Map* map;
-
-	bool handleEvent();
-	void lookAt(sf::RenderWindow& window); 
-	void drawWalls(double sightAngle); 
-
 public:
-	Player(Map* map);
+	Player(Map&, Enemy&);
 	~Player();
 
-	void update(sf::RenderWindow& window, float time);
-	bool checkCollision();
+	void update(sf::RenderWindow&, float);
 
-	sf::CircleShape* getPlayerModel();
-	std::vector<sf::VertexArray*>& getSightLines();
-	std::vector<sf::VertexArray*>& getWalls();
+	bool checkCollisionWithMap();
+	bool checkCollisionWithEnemy(float, float);
+
+    sf::Vector2f position() const;
+	static sf::CircleShape& getPlayerModel();
+
+	const std::vector<sf::VertexArray>& getSightLines() const;
+	const std::vector<std::pair<sf::VertexArray, const sf::Texture&>>& getWalls() const;
+
+private:
+	const float SPEED = 0.05f;
+	const float PLAYER_SIZE = 10.f;
+	const float VISIBILITY_RANGE = 300.f;
+
+	float pos_x;
+	float pos_y;
+	float dx;
+	float dy;
+
+	float sightAngle;
+
+	float health; 
+
+	Map& map;
+	Enemy& enemy;
+
+	void lookAt(sf::RenderWindow&);
+	void drawWalls(double);
+
+	bool handleEvent();
+
+	std::vector<sf::VertexArray> sightLines;
+	//std::vector<sf::VertexArray> walls;
+	std::vector<std::pair<sf::VertexArray, const sf::Texture&>> walls;
+	static sf::CircleShape playerModel;
 };
 
-#endif S
+#endif 

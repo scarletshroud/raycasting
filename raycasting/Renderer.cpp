@@ -1,36 +1,36 @@
 #include "Renderer.h"
 
-Renderer::Renderer(sf::RenderWindow& window) {
-	this->window = &window;
-	map = new Map();
-	player = new Player(map);
-	enemy = new Enemy();
+Renderer::Renderer(sf::RenderWindow& window) : 
+	window(window),  
+	map(), 
+	enemy(map, player),
+	player(map, enemy) 
+{
 }
 
 Renderer::~Renderer() {
-	delete map;
-	delete player;
-	delete enemy;
 }
 
 void Renderer::update(float time) {
-	player->update(*window, time);
+	player.update(window, time);
+	enemy.update(window, time);
 }
 
 void Renderer::render() {
-	
-	for (const auto rectangle : map->getGraphicPresentation()) {
-		window->draw(*rectangle);
+
+	for (const auto& rectangle : map.getGraphicPresentation()) {
+		window.draw(rectangle);
 	}
 
-	window->draw(*player->getPlayerModel());
-	window->draw(*enemy->getEnemyModel()); 
+	window.draw(player.getPlayerModel());
+	window.draw(enemy.getEnemyModel()); 
      
-	for (const auto sightLine : player->getSightLines()) {
-		window->draw(*sightLine);
+	/*for (const auto& sightLine : player.getSightLines()) {
+		window.draw(sightLine);
+	} */
+
+	for (const auto& wall : player.getWalls()) {
+		window.draw(wall.first, &wall.second);
 	} 
 
-	for (const auto wall : player->getWalls()) {
-		window->draw(*wall);
-	}
 } 

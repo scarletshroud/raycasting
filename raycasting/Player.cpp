@@ -1,96 +1,120 @@
-#include "Player.h" 
 #include <iostream>
 
-Player::Player(Map* map) {
-	pos_x = 65.f;
-	pos_y = 65.f; 
-	dx = 0;
-	dy = 0;
-	sightAngle = 0;
-	this->map = map;
-	playerModel = new sf::CircleShape(PLAYER_SIZE); 
-	playerModel->setOrigin(PLAYER_SIZE/2, PLAYER_SIZE/2); 
-	playerModel->setFillColor(sf::Color::White); 
-	playerModel->setPosition(pos_x, pos_y); 
+#include "Player.h"
+#include "Enemy.h"
+
+sf::CircleShape Player::playerModel;
+
+Player::Player(Map& map, Enemy& enemy) : 
+	pos_x(65.f), 
+    pos_y(65.f), 
+    dx(0), 
+    dy(0), 
+    sightAngle(0),
+	health(100),
+    map(map), 
+	enemy(enemy)
+{
+	playerModel = sf::CircleShape(PLAYER_SIZE); 
+	playerModel.setOrigin(PLAYER_SIZE/2, PLAYER_SIZE/2); 
+	playerModel.setFillColor(sf::Color::White); 
+	playerModel.setPosition(pos_x, pos_y); 
 }
 
 Player::~Player() {
-	delete playerModel; 
 }
 
 bool Player::handleEvent() {
 
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::W))) {
-		dy = sin(sightAngle - PI / 6) * SPEED; 
-		dx = cos(sightAngle - PI / 6) * SPEED;
+
+		dy = float(sin(sightAngle - M_PI / 6) * SPEED); 
+		dx = float(cos(sightAngle - M_PI / 6) * SPEED);
+
 		return true;
 	}
 
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::A))) {
-		dy = sin(sightAngle - PI / 6 - PI / 2) * SPEED;
-		dx = cos(sightAngle - PI / 6 - PI / 2) * SPEED;
+
+		dy = float(sin(sightAngle - M_PI / 6 - M_PI_2) * SPEED);
+		dx = float(cos(sightAngle - M_PI / 6 - M_PI_2) * SPEED);
+
 		return true;
 	}
 
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::S))) {
-		dy = -sin(sightAngle - PI / 6) * SPEED;
-		dx = -cos(sightAngle - PI / 6) * SPEED;
+
+		dy = float(-sin(sightAngle - M_PI / 6) * SPEED);
+		dx = float(-cos(sightAngle - M_PI / 6) * SPEED);
+
 		return true;
 	}
 
 	if ((sf::Keyboard::isKeyPressed(sf::Keyboard::D))) {
-		dy = sin(sightAngle - PI / 6 + PI / 2) * SPEED;
-		dx = cos(sightAngle - PI / 6 + PI / 2) * SPEED;
+
+		dy = float(sin(sightAngle - M_PI / 6 + M_PI_2) * SPEED);
+		dx = float(cos(sightAngle - M_PI / 6 + M_PI_2) * SPEED);
+
 		return true;
 	}
 
 	return false;
 }
 
-void Player::lookAt(sf::RenderWindow& window) {
+void Player::lookAt(sf::RenderWindow& window)
+{
 
-	for (const auto& sightLine : sightLines) { //throws exeption
-		 delete sightLine;
-	 } 
+	sf::Vector2i cursorPos = sf::Mouse::getPosition(window);
+	sf::Vector3i color;
 
-	for (const auto& wall : walls) { //throws exeption
-		delete wall;
-	}
+	const size_t LAMBDA = 50000;
+	const size_t WALL_START_Y = 650;
+
+	float cursor_dx = cursorPos.x - pos_x;
+	float cursor_dy = cursorPos.y - pos_y;
+	float i = 0; 
+
+	sightAngle = (atan2(cursor_dy, cursor_dx)) - M_PI / 6;
 
 	sightLines.clear();
 	walls.clear();
 
-	const float LAMBDA = 50000.f;
+	while (i <= M_PI / 3) {
 
-	sf::Vector2i cursorPos = sf::Mouse::getPosition(window);
-	float cursor_dx = cursorPos.x - pos_x;
-	float cursor_dy = cursorPos.y - pos_y;
-	sightAngle = (atan2(cursor_dy, cursor_dx)) - PI / 6;
-
-	float i = 0;
-
-	while (i <= PI / 3) {
 		i += 0.002f;
 
 		bool reachedWall = false;
 
 		float end_pointX = 0;
 		float end_pointY = 0;
+		float cosAngle = (float) (cos(sightAngle));
+		float sinAngle = (float) (sin(sightAngle));
 
-		for (float distance = 0; distance < 300; distance += 1) {
-			end_pointX = pos_x + distance * cos(sightAngle);
-			end_pointY = pos_y + distance * sin(sightAngle);
-			if (map->checkIntersection(end_pointX, end_pointY)) {
+		for (float distance = 0; distance < VISIBILITY_RANGE; distance += 1) {
+
+			end_pointX = pos_x + distance * cosAngle;
+			end_pointY = pos_y + distance * sinAngle;
+
+			if (map.checkIntersection(end_pointX, end_pointY)) {
 				reachedWall = true;
+				color = sf::Vector3i(0, 255, 255);
+				break;
+			}
+
+			if (checkCollisionWithEnemy(end_pointX, end_pointY)) {
+				reachedWall = true;
+				color = sf::Vector3i(220, 20, 60);
 				break;
 			}
 		}
 
-		sf::VertexArray* line = new sf::VertexArray(sf::Lines, 2);
-		(*line)[0].position = sf::Vector2f(pos_x, pos_y);
-		(*line)[0].color = sf::Color::Blue;
-		(*line)[1].position = sf::Vector2f(end_pointX, end_pointY);
-		(*line)[1].color = sf::Color::Red;
+		sf::VertexArray line = sf::VertexArray(sf::Lines, 2);
+
+		line[0].position = sf::Vector2f(pos_x, pos_y);
+		line[1].position = sf::Vector2f(end_pointX, end_pointY);
+
+		line[0].color = sf::Color::Blue;
+		line[1].color = sf::Color::Red;
 
 		sightLines.push_back(line);
 
@@ -101,14 +125,19 @@ void Player::lookAt(sf::RenderWindow& window) {
 			float distance = sqrt(offsetX * offsetX + offsetY * offsetY);
 			float wall_length = LAMBDA / distance;
 
-			sf::VertexArray* wall = new sf::VertexArray(sf::Lines, 2);
-			(*wall)[0].position = sf::Vector2f(500 + i * 1000, 550);
-			(*wall)[0].color = sf::Color(0, 255, 255, 255 - distance / 1.5);
-			(*wall)[1].position = sf::Vector2f(500 + i * 1000, 550 - wall_length);
-			(*wall)[1].color = sf::Color(0, 255, 255, 255 - distance / 1.5);
+			sf::VertexArray wall = sf::VertexArray(sf::Lines, 2);
+		    const sf::Texture& wallTexture = map.getWallTexture(end_pointX, end_pointY);
 
-			walls.push_back(wall);
+			wall[0].position = sf::Vector2f(500 + i * 1000, WALL_START_Y);
+			wall[1].position = sf::Vector2f(500 + i * 1000, WALL_START_Y - wall_length);
 
+			wall[0].texCoords = sf::Vector2f(500 + i * 1000, WALL_START_Y);
+			wall[1].texCoords = sf::Vector2f(500 + i * 1000, WALL_START_Y - wall_length);
+
+			wall[0].color = sf::Color(color.x, color.y, color.z, 255 - distance / 1.5);
+			wall[1].color = sf::Color(color.x, color.y, color.z, 255 - distance / 1.5);
+
+			walls.push_back(std::pair<sf::VertexArray, const sf::Texture&>(wall, wallTexture));
 		}
 
 		sightAngle += 0.002f;
@@ -120,12 +149,15 @@ void Player::drawWalls(double sightAngle) {
 }
 
 void Player::update(sf::RenderWindow& window, float time) {
+
 	if (handleEvent()) {
-		if (!checkCollision()) {
+
+		if (!checkCollisionWithMap()) {
 			pos_x += dx * time;
 			pos_y += dy * time;
-			playerModel->setPosition(pos_x, pos_y);
+			playerModel.setPosition(pos_x, pos_y);
 		}
+
 		dx = 0;
 		dy = 0;
 	}
@@ -134,23 +166,37 @@ void Player::update(sf::RenderWindow& window, float time) {
 	drawWalls(sightAngle);
 }
 
-bool Player::checkCollision() {
+bool Player::checkCollisionWithMap() {
+
 	auto signX = std::copysign(1, dx);
 	auto signY = std::copysign(1, dy); 
-	if (!map->checkIntersection(pos_x + PLAYER_SIZE / 2 * signX, pos_y + PLAYER_SIZE / 2 * signY)) {
-		return false;
-	}
-	return true;
+	
+	return map.checkIntersection((float) (pos_x + PLAYER_SIZE / 2 * signX), (float) (pos_y + PLAYER_SIZE / 2 * signY));
 }
 
-sf::CircleShape* Player::getPlayerModel() {
+bool Player::checkCollisionWithEnemy(float x, float y) {
+
+	if (x >= enemy.position().x - enemy.size() / 2 && x <= enemy.position().x + enemy.size() / 2) {
+		if (y >= enemy.position().y - enemy.size() / 2 && y <= enemy.position().y + enemy.size() / 2) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+sf::Vector2f Player::position() const {
+	return sf::Vector2f(pos_x, pos_y);
+}
+
+sf::CircleShape& Player::getPlayerModel() {
 	return playerModel;
 }
 
-std::vector<sf::VertexArray*>& Player::getSightLines() {
+const std::vector<sf::VertexArray>& Player::getSightLines() const {
 	return sightLines;
 }
 
-std::vector<sf::VertexArray*>& Player::getWalls() {
+const std::vector<std::pair<sf::VertexArray, const sf::Texture&>>& Player::getWalls() const {
 	return walls;
 }

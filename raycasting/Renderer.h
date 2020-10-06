@@ -8,18 +8,18 @@
 #include "Enemy.h"
 
 class Renderer {
-private:
-	sf::RenderWindow *window; 
-	Map* map;
-	Player* player;
-	Enemy* enemy; 
-
 public:
-	Renderer(sf::RenderWindow& window);
+	Renderer(sf::RenderWindow&);
 	~Renderer();
 
-	void update(float time);
+	void update(float);
 	void render(); 
+
+private:
+	sf::RenderWindow& window;
+	Map map;
+	Player player;
+	Enemy enemy;
 };
 
 #endif
