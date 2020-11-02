@@ -63,12 +63,11 @@ bool Player::handleEvent() {
 
 void Player::lookAt(sf::RenderWindow& window)
 {
-
 	sf::Vector2i cursorPos = sf::Mouse::getPosition(window);
 	sf::Vector3i color;
 
-	const size_t LAMBDA = 50000;
-	const size_t WALL_START_Y = 650;
+	const size_t LAMBDA = 40000;
+	const size_t WALL_START_Y = 550;
 
 	float cursor_dx = cursorPos.x - pos_x;
 	float cursor_dy = cursorPos.y - pos_y;
@@ -81,7 +80,8 @@ void Player::lookAt(sf::RenderWindow& window)
 
 	while (i <= M_PI / 3) {
 
-		i += 0.002f;
+		i += 0.0020453f;
+		//i += 1.2f;
 
 		bool reachedWall = false;
 
@@ -125,22 +125,27 @@ void Player::lookAt(sf::RenderWindow& window)
 			float distance = sqrt(offsetX * offsetX + offsetY * offsetY);
 			float wall_length = LAMBDA / distance;
 
-			sf::VertexArray wall = sf::VertexArray(sf::Lines, 2);
-		    const sf::Texture& wallTexture = map.getWallTexture(end_pointX, end_pointY);
+		    sf::Sprite wallSprite = map.getWallSprite(end_pointX, end_pointY);
+			wallSprite.setPosition(500 + i * 1000, WALL_START_Y);
+			wallSprite.scale(1, -1 * wall_length / 128);
+		//	wallSprite.setTextureRect(sf::IntRect(0, 0, 1, wallSprite.getTextureRect().height));
+
+		/*	sf::VertexArray wall = sf::VertexArray(sf::Lines, 2);
 
 			wall[0].position = sf::Vector2f(500 + i * 1000, WALL_START_Y);
 			wall[1].position = sf::Vector2f(500 + i * 1000, WALL_START_Y - wall_length);
 
-			wall[0].texCoords = sf::Vector2f(500 + i * 1000, WALL_START_Y);
+	ó		wall[0].texCoords = sf::Vector2f(500 + i * 1000, WALL_START_Y);
 			wall[1].texCoords = sf::Vector2f(500 + i * 1000, WALL_START_Y - wall_length);
 
 			wall[0].color = sf::Color(color.x, color.y, color.z, 255 - distance / 1.5);
-			wall[1].color = sf::Color(color.x, color.y, color.z, 255 - distance / 1.5);
+			wall[1].color = sf::Color(color.x, color.y, color.z, 255 - distance / 1.5); */
 
-			walls.push_back(std::pair<sf::VertexArray, const sf::Texture&>(wall, wallTexture));
+			walls.push_back(wallSprite);
 		}
 
-		sightAngle += 0.002f;
+		sightAngle += 0.0020453f;
+	    //sightAngle += 1.2f;
 	}
 }
 
@@ -165,7 +170,7 @@ void Player::update(sf::RenderWindow& window, float time) {
 	lookAt(window);
 	drawWalls(sightAngle);
 }
-
+	
 bool Player::checkCollisionWithMap() {
 
 	auto signX = std::copysign(1, dx);
@@ -197,6 +202,6 @@ const std::vector<sf::VertexArray>& Player::getSightLines() const {
 	return sightLines;
 }
 
-const std::vector<std::pair<sf::VertexArray, const sf::Texture&>>& Player::getWalls() const {
+const std::vector<sf::Sprite>& Player::getWalls() const {
 	return walls;
 }

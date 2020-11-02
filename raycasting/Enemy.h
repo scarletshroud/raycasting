@@ -40,7 +40,7 @@ private:
 	Map& map;
 	Player& player;
 
-	static sf::CircleShape enemyModel;
+	static sf::CircleShape enemyMapModel;
 };
 
 #endif 

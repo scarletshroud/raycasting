@@ -25,7 +25,7 @@ public:
 	static sf::CircleShape& getPlayerModel();
 
 	const std::vector<sf::VertexArray>& getSightLines() const;
-	const std::vector<std::pair<sf::VertexArray, const sf::Texture&>>& getWalls() const;
+	const std::vector<sf::Sprite>& getWalls() const;
 
 private:
 	const float SPEED = 0.05f;
@@ -51,7 +51,7 @@ private:
 
 	std::vector<sf::VertexArray> sightLines;
 	//std::vector<sf::VertexArray> walls;
-	std::vector<std::pair<sf::VertexArray, const sf::Texture&>> walls;
+	std::vector<sf::Sprite> walls;
 	static sf::CircleShape playerModel;
 };
 

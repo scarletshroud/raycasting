@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "Map.h"
 
-sf::CircleShape Enemy::enemyModel;
+sf::CircleShape Enemy::enemyMapModel;
 
 Enemy::Enemy(Map& map, Player& player) :
 	pos_x(100.f),
@@ -13,10 +13,10 @@ Enemy::Enemy(Map& map, Player& player) :
 	map(map),
 	player(player)
 {
-	enemyModel = sf::CircleShape(ENEMY_SIZE);
-	enemyModel.setOrigin(ENEMY_SIZE / 2, ENEMY_SIZE / 2);
-	enemyModel.setFillColor(sf::Color::Red);
-	enemyModel.setPosition(pos_x, pos_y);
+	enemyMapModel = sf::CircleShape(ENEMY_SIZE);
+	enemyMapModel.setOrigin(ENEMY_SIZE / 2, ENEMY_SIZE / 2);
+	enemyMapModel.setFillColor(sf::Color::Red);
+	enemyMapModel.setPosition(pos_x, pos_y);
 }
 
 Enemy::~Enemy() {
@@ -29,7 +29,7 @@ void Enemy::update(sf::RenderWindow& window, float time) {
 			findPath(player.position());
 			pos_x += dx * time; 
 			pos_y += dy * time;
-			enemyModel.setPosition(pos_x, pos_y);
+			enemyMapModel.setPosition(pos_x, pos_y);
 		}
 	}
 
@@ -67,6 +67,6 @@ sf::Vector2f Enemy::position() const {
 }
 
 sf::CircleShape& Enemy::getEnemyModel() {
-	return enemyModel;
+	return enemyMapModel;
 }
 

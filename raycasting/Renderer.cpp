@@ -25,12 +25,12 @@ void Renderer::render() {
 	window.draw(player.getPlayerModel());
 	window.draw(enemy.getEnemyModel()); 
      
-	/*for (const auto& sightLine : player.getSightLines()) {
+	for (const auto& sightLine : player.getSightLines()) {
 		window.draw(sightLine);
-	} */
+	} 
 
 	for (const auto& wall : player.getWalls()) {
-		window.draw(wall.first, &wall.second);
+		window.draw(wall);
 	} 
 
 } 
